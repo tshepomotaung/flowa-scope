@@ -2,7 +2,7 @@
 import { createServiceClient } from "./supabase"
 import { inferTier, normalisePhone } from "./utils"
 import { FullFormData } from "./validations"
-import { sendInternalLeadEmail } from "./email"
+import { sendInternalLeadEmail, sendConfirmationEmail } from "./email"
 
 export type SubmitResult =
   | { success: true; id: string; tier: string }
@@ -67,6 +67,15 @@ export async function submitScopeForm(
       companyLegalName: data.companyLegalName,
       industry: data.industry,
       tier,
+    }).catch(console.error)
+
+    // Send customer confirmation — no demo booked yet, just acknowledges submission
+    sendConfirmationEmail({
+      to: data.workEmail,
+      firstName: data.firstName,
+      companyLegalName: data.companyLegalName,
+      tier,
+      submissionId: row.id,
     }).catch(console.error)
 
     return { success: true, id: row.id, tier }

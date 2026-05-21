@@ -646,6 +646,8 @@ function Step5({
   setPopiaConsent,
   marketingOptIn,
   setMarketingOptIn,
+  calUsername,
+  calEventType,
 }: {
   form: ReturnType<typeof useForm<FullFormData>>
   isSubmitting: boolean
@@ -654,55 +656,80 @@ function Step5({
   setPopiaConsent: (v: boolean) => void
   marketingOptIn: boolean
   setMarketingOptIn: (v: boolean) => void
+  calUsername: string
+  calEventType: string
 }) {
+  const { watch } = form
+  const firstName = watch("firstName")
+  const lastName = watch("lastName")
+  const workEmail = watch("workEmail")
+
   return (
     <div>
       <h2 style={sectionHeadStyle}>Book your demo</h2>
       <p style={sectionSubStyle}>
-        Pick a time and we&apos;ll send a tailored prep pack before the call.
+        Pick a time and we&apos;ll walk through exactly how Flowa can work for your business.
       </p>
 
-      {/* Cal.com placeholder */}
-      <div
-        style={{
-          border: "2px dashed #D0D5DD",
-          borderRadius: "12px",
-          padding: "40px 24px",
-          textAlign: "center",
-          backgroundColor: "#FAFAFA",
-          marginBottom: "28px",
-        }}
-      >
-        <div style={{ fontSize: "32px", marginBottom: "12px" }}>📅</div>
-        <p style={{ fontSize: "15px", fontWeight: 600, color: "#1F2A44", marginBottom: "8px" }}>
-          Calendar booking coming soon
-        </p>
-        <p style={{ fontSize: "13px", color: "#667085", lineHeight: 1.6 }}>
-          Set up your Cal.com account and add{" "}
-          <code
-            style={{
-              backgroundColor: "#F2F4F7",
-              padding: "2px 6px",
-              borderRadius: "4px",
-              fontSize: "12px",
-            }}
-          >
-            NEXT_PUBLIC_CAL_USERNAME
-          </code>{" "}
-          to{" "}
-          <code
-            style={{
-              backgroundColor: "#F2F4F7",
-              padding: "2px 6px",
-              borderRadius: "4px",
-              fontSize: "12px",
-            }}
-          >
-            .env.local
-          </code>{" "}
-          to enable live booking. Your details will still be submitted below.
-        </p>
-      </div>
+      {/* Cal.com embed — shows once NEXT_PUBLIC_CAL_USERNAME is set */}
+      {calUsername ? (
+        <div
+          style={{
+            border: "1px solid #D0D5DD",
+            borderRadius: "12px",
+            overflow: "hidden",
+            marginBottom: "24px",
+            minHeight: "500px",
+          }}
+        >
+          <iframe
+            src={`https://cal.com/${calUsername}/${calEventType}?embed=true&name=${encodeURIComponent(firstName + " " + lastName)}&email=${encodeURIComponent(workEmail)}&metadata[submission_id]=pending`}
+            style={{ width: "100%", height: "600px", border: "none" }}
+            title="Book a Flowa demo"
+          />
+        </div>
+      ) : (
+        <div
+          style={{
+            border: "2px dashed #D0D5DD",
+            borderRadius: "12px",
+            padding: "40px 24px",
+            textAlign: "center",
+            backgroundColor: "#FAFAFA",
+            marginBottom: "28px",
+          }}
+        >
+          <div style={{ fontSize: "32px", marginBottom: "12px" }}>📅</div>
+          <p style={{ fontSize: "15px", fontWeight: 600, color: "#1F2A44", marginBottom: "8px" }}>
+            Calendar booking coming soon
+          </p>
+          <p style={{ fontSize: "13px", color: "#667085", lineHeight: 1.6 }}>
+            Set up your Cal.com account and add{" "}
+            <code
+              style={{
+                backgroundColor: "#F2F4F7",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                fontSize: "12px",
+              }}
+            >
+              NEXT_PUBLIC_CAL_USERNAME
+            </code>{" "}
+            to{" "}
+            <code
+              style={{
+                backgroundColor: "#F2F4F7",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                fontSize: "12px",
+              }}
+            >
+              .env.local
+            </code>{" "}
+            to enable live booking. Your details will still be submitted below.
+          </p>
+        </div>
+      )}
 
       {/* POPIA consent */}
       <div
@@ -825,6 +852,9 @@ export default function ScopeForm() {
   const [popiaConsent, setPopiaConsent] = useState(false)
   const [marketingOptIn, setMarketingOptIn] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+
+  const calUsername = process.env.NEXT_PUBLIC_CAL_USERNAME ?? ""
+  const calEventType = process.env.NEXT_PUBLIC_CAL_EVENT_TYPE ?? "discovery-call"
 
   const form = useForm<FullFormData>({
     defaultValues,
@@ -1059,6 +1089,8 @@ export default function ScopeForm() {
               setPopiaConsent={setPopiaConsent}
               marketingOptIn={marketingOptIn}
               setMarketingOptIn={setMarketingOptIn}
+              calUsername={calUsername}
+              calEventType={calEventType}
             />
           )}
 
