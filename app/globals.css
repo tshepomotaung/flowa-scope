@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  --green: #1FAD5A;
+  --navy: #1F2A44;
+  --grey-bg: #F2F4F7;
+  --border: #D0D5DD;
+  --body: #1F2937;
+  --muted: #667085;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  color: var(--body);
+  background-color: var(--grey-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
